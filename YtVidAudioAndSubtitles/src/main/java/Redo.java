@@ -5,7 +5,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.json.JSONException;
@@ -14,7 +13,6 @@ import org.json.JSONObject;
 import main.java.gusthavo.srt.SRTParser;
 import main.java.gusthavo.srt.Subtitle;
 
-@SuppressWarnings("unused")
 public class Redo {
 	// USER_INPUTS
 	String VideoFile = "F:\\code\\java\\EE\\YtVidAudioAndSubtitles\\Test_Vid.mp4";
@@ -32,46 +30,23 @@ public class Redo {
 
 	public Redo() throws Exception {
 
-//		/* 1. OG Video -> Audio */ AudioFile = VideoToAudio(VideoFile);
-//		System.out.println("\n\nAudioFile: " + AudioFile.toString());
-//
-//		/* 2. Audio -> Subtitles */ EnglishSubtitles = AudioToSubtitles(AudioFile);
-//		System.out.println("\n\nEnglishSubtitles: " + !EnglishSubtitles.isEmpty());
-//
-//		/* 3. Subtitles -> Translated Subtitles */ TranslatedSRT = TranslateSubtitles(EnglishSubtitles, Languages);
-//		System.out.println(
-//				"\n\nTranslatedSRT: " + !(TranslatedSRT.toString().isBlank() && TranslatedSRT.toString().isEmpty()));
-//
-//		/* 4. Translated SRT -> Translated WAV */ TranslatedAudioFile = TransSubToTransAudio(Languages, TranslatedSRT);
-//		System.out.println("\n\nTranslatedAudioFile: " + TranslatedAudioFile);
-//
-//		/* 5. OG Video = OG Video + Translated Audio + Translated Subtitles */ FinalVideoPath = GenerateFinalVideo(
-//				TranslatedAudioFile, VideoFile, TranslatedSRT);
-//		System.out.println("\n\nFinalVideoPath: " + FinalVideoPath);
+		/* 1. OG Video -> Audio */ AudioFile = VideoToAudio(VideoFile);
+		System.out.println("\n\nAudioFile: " + AudioFile.toString());
 
-		String in = "1\n" + "00:00:00,498 --> 00:00:02,827\n" + "- Here's what I love most\n" + "about food and diet.\n"
-				+ "\n" + "2\n" + "00:00:02,827 --> 00:00:06,383\n" + "We all eat several times a day,\n"
-				+ "and we're totally in charge\n" + "\n" + "3\n" + "00:00:06,383 --> 00:00:09,427\n"
-				+ "of what goes on our plate\n" + "and what stays off." + "\n";
-		System.out.println("In: \n" + in);
+		/* 2. Audio -> Subtitles */ EnglishSubtitles = AudioToSubtitles(AudioFile);
+		System.out.println("\n\nEnglishSubtitles: " + !EnglishSubtitles.isEmpty());
 
-		String spacer = "#";
-		int count = 150;
-		for (int i = 0; i < count; i++) {
-			System.out.print(spacer);
-		}
-		System.out.println();
-		for (int i = 0; i < count; i++) {
-			System.out.print(spacer);
-		}
-		System.out.println();
-		for (int i = 0; i < count; i++) {
-			System.out.print(spacer);
-		}
+		/* 3. Subtitles -> Translated Subtitles */ TranslatedSRT = TranslateSubtitles(EnglishSubtitles, Languages);
+		System.out.println(
+				"\n\nTranslatedSRT: " + !(TranslatedSRT.toString().isBlank() && TranslatedSRT.toString().isEmpty()));
 
-		System.out.println("\nOut: \n" + SrtParser(in));
+		/* 4. Translated SRT -> Translated WAV */ TranslatedAudioFile = TransSubToTransAudio(Languages, TranslatedSRT);
+		System.out.println("\n\nTranslatedAudioFile: " + TranslatedAudioFile);
 
-//		System.out.println(AudioToSubtitles(VideoToAudio(VideoFile)));
+		/* 5. OG Video = OG Video + Translated Audio + Translated Subtitles */ FinalVideoPath = GenerateFinalVideo(
+				TranslatedAudioFile, VideoFile, TranslatedSRT);
+		System.out.println("\n\nFinalVideoPath: " + FinalVideoPath);
+
 	}
 
 	// DONE
@@ -96,7 +71,19 @@ public class Redo {
 
 	// TODO
 	private String AudioToSubtitles(String AudioFilePath) throws Exception {
-		return null;
+		return "1\n"
+				+ "00:00:00,498 --> 00:00:02,827\n"
+				+ "Here's what I love most about food and diet.\n"
+				+ "\n"
+				+ "2\n"
+				+ "00:00:02,827 --> 00:00:06,383\n"
+				+ "We all eat several times a day,\n"
+				+ "and we're totally in charge\n"
+				+ "\n"
+				+ "3\n"
+				+ "00:00:06,383 --> 00:00:09,427\n"
+				+ "of what goes on our plate\n"
+				+ "and what stays off.";
 	}
 
 	// DONE
@@ -136,20 +123,13 @@ public class Redo {
 	public HashMap<String, String> TransSubToTransAudio(String[] Langs, HashMap<String, String> Sub) throws Exception {
 		HashMap<String, String> result = new HashMap<String, String>();
 		for (String lang : Langs) {
-
+			String subs = Sub.get(lang);
+			
+			// Parse SRT
+			
+			
 		}
 		return result;
-	}
-
-	// Helper Method:
-	// DONE
-	private ArrayList<Subtitle> SrtParser(String SRT) {
-		
-		
-		
-		ArrayList<Subtitle> subtitles = SRTParser.getSubtitlesFromFile(SRT);
-		
-		return subtitles;
 	}
 
 	// LATE
