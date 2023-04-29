@@ -1,19 +1,18 @@
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
-import java.util.regex.Pattern;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import main.java.gusthavo.srt.SRTParser;
+import main.java.gusthavo.srt.Subtitle;
 
 @SuppressWarnings("unused")
 public class Redo {
@@ -144,75 +143,13 @@ public class Redo {
 
 	// Helper Method:
 	// DONE
-	private ArrayList<HashMap<String, String>> SrtParser(String SRT) {
-		System.out.println("\n\n!!!!!Inside Method!!!!!\n\n");
-		SRT = (SRT.charAt(SRT.length() - 1) == '\n') ? (SRT) : (SRT + "\n");
-		String[] lines = SRT.split("\n");
-		ArrayList<HashMap<String, String>> ParsedSRT = null;
-		HashMap<String, String> lineMap = new HashMap<String, String>();
-		boolean timestamp = false;
-
-		for (String line : lines) {
-			System.out.println("\nline: " + line);
-
-			if ((Pattern.compile("^$").matcher(line).matches()) && timestamp) {
-				timestamp = false;
-				ParsedSRT.add(lineMap);
-				ParsedSRT = null;
-				System.out.println("WHAT\n\n\n");
-			}
-
-			if (Pattern.compile("\\d").matcher(line).matches() && !timestamp) {
-				ParsedSRT = new ArrayList<HashMap<String, String>>();
-				continue;
-			}
-
-			if (Pattern.compile("\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d --> \\d\\d:\\d\\d:\\d\\d,\\d\\d\\d").matcher(line)
-					.matches() && !timestamp) {
-				timestamp = true;
-
-				int start = Integer.parseInt(line.split(" --> ")[0].split(":")[0]) * 60 * 60 * 1000 // h to ms
-						+ Integer.parseInt(line.split(" --> ")[0].split(":")[1]) * 60 * 1000 // min to ms
-						+ Integer.parseInt(line.split(" --> ")[0].split(":")[2].split(",")[0]) * 1000 // sec to ms
-						+ Integer.parseInt(line.split(" --> ")[0].split(":")[2].split(",")[1]); // ms
-
-				int stop = Integer.parseInt(line.split(" --> ")[1].split(":")[0]) * 60 * 60 * 1000 // h to ms
-						+ Integer.parseInt(line.split(" --> ")[1].split(":")[1]) * 60 * 1000 // min to ms
-						+ Integer.parseInt(line.split(" --> ")[1].split(":")[2].split(",")[0]) * 1000 // sec to ms
-						+ Integer.parseInt(line.split(" --> ")[1].split(":")[2].split(",")[1]); // ms
-
-				lineMap.put("start", "" + start);
-				lineMap.put("end", "" + stop);
-				lineMap.put("duration", "" + (stop - start));
-				lineMap.put("time_unprocessed", line);
-				System.out.println("start: " + start + "\nstop: " + stop + "\nDuration: " + (stop - start));
-				continue;
-			}
-
-			if (!line.isBlank() && !line.isEmpty() && timestamp
-					&& !Pattern.compile("\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d --> \\d\\d:\\d\\d:\\d\\d,\\d\\d\\d")
-							.matcher(line).matches()) {
-
-				String lineMapText = lineMap.get("text");
-				String oldText = (lineMapText == null) ? ("") : (lineMapText);
-				String text = oldText + " " + line;
-				lineMap.put("text", text);
-				System.out.println("Old Text: " + lineMapText + "\nNew Text: " + text);
-				continue;
-			}
-
-		} // main `for` loop
-
-		System.out.println(ParsedSRT.toArray().length);
-		for (HashMap<String, String> map : ParsedSRT) {
-			System.out.println("\n\ntext: " + map.get("text"));
-			System.out.println("time_unprocessed: " + map.get("time_unprocessed"));
-			System.out.println("start: " + map.get("start"));
-			System.out.println("stop: " + map.get("stop"));
-			System.out.println("duration: " + map.get("duration"));
-		}
-		System.out.println("\n\n!!!!!Outside Method!!!!!\n\n");
-		return ParsedSRT;
+	private ArrayList<Subtitle> SrtParser(String SRT) {
+		
+		
+		
+		ArrayList<Subtitle> subtitles = SRTParser.getSubtitlesFromFile(SRT);
+		
+		return subtitles;
 	}
 
 	// LATE
