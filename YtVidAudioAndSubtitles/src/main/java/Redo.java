@@ -50,20 +50,10 @@ public class Redo {
 //				TranslatedAudioFile, VideoFile, TranslatedSRT);
 //		System.out.println("\n\nFinalVideoPath: " + FinalVideoPath);
 
-		String in = "1\n"
-				+ "00:00:00,498 --> 00:00:02,827\n"
-				+ "- Here's what I love most\n"
-				+ "about food and diet.\n"
-				+ "\n"
-				+ "2\n"
-				+ "00:00:02,827 --> 00:00:06,383\n"
-				+ "We all eat several times a day,\n"
-				+ "and we're totally in charge\n"
-				+ "\n"
-				+ "3\n"
-				+ "00:00:06,383 --> 00:00:09,427\n"
-				+ "of what goes on our plate\n"
-				+ "and what stays off.";
+		String in = "1\n" + "00:00:00,498 --> 00:00:02,827\n" + "- Here's what I love most\n" + "about food and diet.\n"
+				+ "\n" + "2\n" + "00:00:02,827 --> 00:00:06,383\n" + "We all eat several times a day,\n"
+				+ "and we're totally in charge\n" + "\n" + "3\n" + "00:00:06,383 --> 00:00:09,427\n"
+				+ "of what goes on our plate\n" + "and what stays off." + "\n";
 		System.out.println("In: \n" + in);
 
 		String spacer = "#";
@@ -80,7 +70,7 @@ public class Redo {
 			System.out.print(spacer);
 		}
 
-		System.out.println("\nOut: \n" + SrtToSsml(in));
+		System.out.println("\nOut: \n" + SrtParser(in));
 
 //		System.out.println(AudioToSubtitles(VideoToAudio(VideoFile)));
 	}
@@ -153,44 +143,33 @@ public class Redo {
 	}
 
 	// Helper Method:
-	// TODO
-	private String SrtToSsml(String SRT) {
+	// DONE
+	private ArrayList<HashMap<String, String>> SrtParser(String SRT) {
 		System.out.println("\n\n!!!!!Inside Method!!!!!\n\n");
-
 		SRT = (SRT.charAt(SRT.length() - 1) == '\n') ? (SRT) : (SRT + "\n");
-
 		String[] lines = SRT.split("\n");
-		ArrayList<HashMap<String, String>> ParsedSRT = new ArrayList<HashMap<String, String>>();
-		boolean inDialouge = false;
-		boolean timestampsDone = false;
+		ArrayList<HashMap<String, String>> ParsedSRT = null;
 		HashMap<String, String> lineMap = new HashMap<String, String>();
+		boolean timestamp = false;
 
 		for (String line : lines) {
 			System.out.println("\nline: " + line);
 
-			if (line.isBlank() || line.isEmpty()) {
-				inDialouge = false;
-				timestampsDone = false;
-				System.out.println("blank\ninDialouge: " + inDialouge + "\ntimestampsDone: " + timestampsDone);
-
-				if (!lineMap.isEmpty()) {
-					System.out.println("map not empty");
-					ParsedSRT.add(lineMap);
-					lineMap = new HashMap<String, String>();
-				}
-
-				continue;
+			if ((Pattern.compile("^$").matcher(line).matches()) && timestamp) {
+				timestamp = false;
+				ParsedSRT.add(lineMap);
+				ParsedSRT = null;
+				System.out.println("WHAT\n\n\n");
 			}
 
-			if (Pattern.compile("\\d").matcher(line).matches() && !inDialouge && !timestampsDone) {
-				inDialouge = true;
-				System.out.println("inDialouge: " + inDialouge);
+			if (Pattern.compile("\\d").matcher(line).matches() && !timestamp) {
+				ParsedSRT = new ArrayList<HashMap<String, String>>();
 				continue;
 			}
 
 			if (Pattern.compile("\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d --> \\d\\d:\\d\\d:\\d\\d,\\d\\d\\d").matcher(line)
-					.matches() && inDialouge && !timestampsDone) {
-				timestampsDone = true;
+					.matches() && !timestamp) {
+				timestamp = true;
 
 				int start = Integer.parseInt(line.split(" --> ")[0].split(":")[0]) * 60 * 60 * 1000 // h to ms
 						+ Integer.parseInt(line.split(" --> ")[0].split(":")[1]) * 60 * 1000 // min to ms
@@ -210,15 +189,20 @@ public class Redo {
 				continue;
 			}
 
-			if (!line.isBlank() && !line.isEmpty() && inDialouge && timestampsDone) {
+			if (!line.isBlank() && !line.isEmpty() && timestamp
+					&& !Pattern.compile("\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d --> \\d\\d:\\d\\d:\\d\\d,\\d\\d\\d")
+							.matcher(line).matches()) {
+
 				String lineMapText = lineMap.get("text");
-				String text = (lineMapText == null) ? ("") : (lineMapText + " " + line);
+				String oldText = (lineMapText == null) ? ("") : (lineMapText);
+				String text = oldText + " " + line;
 				lineMap.put("text", text);
 				System.out.println("Old Text: " + lineMapText + "\nNew Text: " + text);
 				continue;
 			}
-		}
-		
+
+		} // main `for` loop
+
 		System.out.println(ParsedSRT.toArray().length);
 		for (HashMap<String, String> map : ParsedSRT) {
 			System.out.println("\n\ntext: " + map.get("text"));
@@ -228,7 +212,7 @@ public class Redo {
 			System.out.println("duration: " + map.get("duration"));
 		}
 		System.out.println("\n\n!!!!!Outside Method!!!!!\n\n");
-		return "return";
+		return ParsedSRT;
 	}
 
 	// LATE
