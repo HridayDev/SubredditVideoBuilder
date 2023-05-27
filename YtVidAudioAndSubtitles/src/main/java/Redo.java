@@ -1,10 +1,12 @@
 import java.io.BufferedReader;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.json.JSONException;
@@ -71,19 +73,10 @@ public class Redo {
 
 	// TODO
 	private String AudioToSubtitles(String AudioFilePath) throws Exception {
-		return "1\n"
-				+ "00:00:00,498 --> 00:00:02,827\n"
-				+ "Here's what I love most about food and diet.\n"
-				+ "\n"
-				+ "2\n"
-				+ "00:00:02,827 --> 00:00:06,383\n"
-				+ "We all eat several times a day,\n"
-				+ "and we're totally in charge\n"
-				+ "\n"
-				+ "3\n"
-				+ "00:00:06,383 --> 00:00:09,427\n"
-				+ "of what goes on our plate\n"
-				+ "and what stays off.";
+		return "1\n" + "00:00:00,498 --> 00:00:02,827\n" + "Here's what I love most about food and diet.\n" + "\n"
+				+ "2\n" + "00:00:02,827 --> 00:00:06,383\n" + "We all eat several times a day,\n"
+				+ "and we're totally in charge\n" + "\n" + "3\n" + "00:00:06,383 --> 00:00:09,427\n"
+				+ "of what goes on our plate\n" + "and what stays off.";
 	}
 
 	// DONE
@@ -124,14 +117,29 @@ public class Redo {
 		HashMap<String, String> result = new HashMap<String, String>();
 		for (String lang : Langs) {
 			String subs = Sub.get(lang);
-			
-			// Parse SRT
-			
-			
+
+			// Parse SRT and make ssml
+			FileWriter writer = new FileWriter("SRT-" + lang + ".srt");
+			writer.write(subs);
+			writer.close();
+			ArrayList<Subtitle> subtitles = SRTParser.getSubtitlesFromFile("SRT-" + lang + ".srt");
+			String ssml = "<speak lang=\"" + lang + "\">";
+			for (Subtitle s : subtitles) {
+				
+			}
+
 		}
 		return result;
 	}
 
+	/*
+<speak lang="en">
+<s>sample sentence</s>
+<break time="5000">
+<s>another sentence</s>
+</speak>
+	*/
+	
 	// LATE
 	private String GenerateFinalVideo(HashMap<String, String> AudioMap, String VideoPath, HashMap<String, String> Sub) {
 
